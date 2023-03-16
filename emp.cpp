@@ -3,6 +3,7 @@
 #include "menu.h"
 #include "employe.h"
 #include <QMessageBox>
+#include <QInputDialog>
 
 
 emp::emp(QWidget *parent) :
@@ -12,20 +13,31 @@ emp::emp(QWidget *parent) :
     ui->setupUi(this);
     ui->tableView->setModel(Emp.afficher());
 
+    //controle de saisie
+    ui->lineEdit_cin->setValidator(new QIntValidator(0,99999999,this));
+    ui->lineEdit_num->setValidator(new QIntValidator(0,99999999,this));
 
-    QSqlQueryModel * model=new QSqlQueryModel();
-    model->setQuery("select * from GS_EMPLOYÉ");
+    QRegularExpression regExp_n("^[a-zA-Z]+$");
+    QValidator *validator_n = new QRegularExpressionValidator(regExp_n, this);
+    ui->lineEdit_nom->setValidator(validator_n);
+
+    QRegularExpression regExp_p("^[a-zA-Z]+$");
+    QValidator *validator_p = new QRegularExpressionValidator(regExp_p, this);
+    ui->lineEdit_pre->setValidator(validator_p);
+
+    QRegularExpression regExp_a("^[A-Za-z0-9_]+$");
+    QValidator *validator_a = new QRegularExpressionValidator(regExp_a, this);
+    ui->lineEdit_pre->setValidator(validator_a);
+
+    QRegularExpression regExp_m("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    QValidator *validator_m = new QRegularExpressionValidator(regExp_m, this);
+    ui->lineEdit_mail->setValidator(validator_m);
+
+    QRegularExpression regExp_pass("^(?=.*[a-z])(?=.*[A-Z])(?!.*\\s).{8,}$");
+    QValidator *validator_pass = new QRegularExpressionValidator(regExp_pass, this);
+    ui->lineEdit_mail->setValidator(validator_pass);
 
 
-
-    model->insertColumn(model->columnCount());
-    model->setHeaderData(model->columnCount() - 1, Qt::Horizontal, QObject::tr("ACTION"));
-
-        // Add the delete button to each row
-
-
-
-    //QPushButton *button = new QPushButton("supp");
     // Create and set up the menu button
     menuButton = new QPushButton("", this);
     menuButton->setGeometry(20, 31, 71, 41);
@@ -105,101 +117,8 @@ void emp::on_pushButton_5_clicked()
    m.exec();
 }
 
-
-
-void emp::on_ajouter_clicked()
+void emp::tester( QSqlQueryModel * model)
 {
-
-    int CIN = ui->lineEdit_cin->text().toInt();
-    int num= ui->lineEdit_num->text().toInt();
-    QString nom= ui->lineEdit_nom->text();
-    QString prenom= ui->lineEdit_pre->text();
-    QString adresse= ui->lineEdit_add->text();
-    QString mail= ui->lineEdit_mail->text();
-    QString fonction= ui->lineEdit_fct->text();
-    QString mdp= ui->lineEdit_mdp->text();
-    employe e(CIN,nom,prenom,num,adresse,mail,fonction,mdp);
-    bool test=e.ajouter();
-    if(test)
-    {
-
-        ui->tableView->setModel(Emp.afficher());
-        QMessageBox::information(nullptr,QObject::tr("OK"),
-                                 QObject::tr("ajout effectué.\n"
-                                             "Click cancel to exit"),QMessageBox::Cancel);
-    }
-    else
-    {
-        QMessageBox::critical(nullptr,QObject::tr("Not OK"),
-                               QObject::tr("ajout non effectué.\n"
-                              "Click  cancel to exit"),QMessageBox::Cancel);
-    }
-
-}
-
-void emp::on_supprimer_clicked()
-{
-
-    int CIN=ui->lineEdit_cin->text().toInt();
-    bool test=Emp.supprimer(CIN);
-    if(test)
-    {
-
-        QMessageBox::information(nullptr,QObject::tr("OK"),
-                                 QObject::tr("suppression effectué.\n"
-                                             "Click cancel to exit"),QMessageBox::Cancel);
-    }
-    else
-    {
-        QMessageBox::critical(nullptr,QObject::tr("Not OK"),
-                               QObject::tr("suppression non effectué.\n"
-                              "Click  cancel to exit"),QMessageBox::Cancel);
-    }
-}
-
-
-
-
-emp::emp(int cin, QString nom, QString pre, int num,  QString add, QString mail, QString fctn, QString mdp)
-{
-    this->CIN=cin;
-    this->nom = nom;
-    this->prenom = pre;
-    this->num = num;
-    this->adresse = add;
-    this->mail = mail;
-    this->fonction = fctn;
-    this->mdp = mdp;
-
-}
-
-bool emp::ajouter()
-{
-   QSqlQuery query;
-   QString c = QString::number(CIN);
-   QString n = QString::number(num);
-   query.prepare("INSERT INTO GS_EMPLOYÉ (CIN,NOM,PRENOM,NUM_TEL,ADRESSE,MAIL,FONCTION,MOT_DE_PASSE)" "values (:CIN, :nom, :prenom, :num, :adresse, :mail, :fonction, :mdp)");
-   query.bindValue(":CIN",c);
-   query.bindValue(":nom",nom);
-   query.bindValue(":prenom",prenom);
-   query.bindValue(":num",num);
-   query.bindValue(":adresse",adresse);
-   query.bindValue(":mail",mail);
-   query.bindValue(":fonction",fonction);
-   query.bindValue(":mdp",mdp);
-   return query.exec();
-
-}
-
-QSqlQueryModel *emp::afficher()
-{
-
-
-    QSqlQueryModel * model=new QSqlQueryModel();
-
-    model->setQuery("select * from GS_EMPLOYÉ");
-    model->insertColumn(model->columnCount());
-    model->setHeaderData(model->columnCount() - 1, Qt::Horizontal, QObject::tr("ACTION"));
 
     for (int row = 0; row < model->rowCount(); ++row)
     {
@@ -213,27 +132,100 @@ QSqlQueryModel *emp::afficher()
 
         ui->tableView->setIndexWidget(model->index(row, model->columnCount() - 1), deleteButton);
     }
-
-
-    model->setHeaderData(0,Qt::Horizontal,QObject::tr("CIN"));
-    model->setHeaderData(1,Qt::Horizontal,QObject::tr("NOM"));
-    model->setHeaderData(2,Qt::Horizontal,QObject::tr("PRENOM"));
-    model->setHeaderData(3,Qt::Horizontal,QObject::tr("NUM_TEL"));
-    model->setHeaderData(4,Qt::Horizontal,QObject::tr("ADRESSE"));
-    model->setHeaderData(5,Qt::Horizontal,QObject::tr("MAIL"));
-    model->setHeaderData(6,Qt::Horizontal,QObject::tr("MOT_DE_PASSE"));
-    model->setHeaderData(7,Qt::Horizontal,QObject::tr("FONCTION"));
-   // model->setHeaderData(8,Qt::Horizontal,QObject::tr("ACTION"));
-    return  model;
 }
 
-bool employe::supprimer(int cin)
+
+
+
+void emp::on_ajouter_clicked()
 {
-    QSqlQuery query;
-    QString c=QString::number(cin);
-    query.prepare("Delete from GS_EMPLOYÉ where CIN= :cin");
-    query.bindValue(":cin",c);
-    return  query.exec();
+    // Get the data for the new employee from the user interface
+    int CIN = ui->lineEdit_cin->text().toInt();
+    int num= ui->lineEdit_num->text().toInt();
+    QString nom= ui->lineEdit_nom->text();
+    QString prenom= ui->lineEdit_pre->text();
+    QString adresse= ui->lineEdit_add->text();
+    QString mail= ui->lineEdit_mail->text();
+    QString fonction= ui->lineEdit_fct->text();
+    QString mdp= ui->lineEdit_mdp->text();
+
+    // Create a new employee object and add it to the database
+    employe e(CIN, nom, prenom, num, adresse, mail, fonction, mdp);
+    bool test = e.ajouter();
+
+    if(test)
+    {
+        // Update the table view with the new data and action buttons
+        QSqlQueryModel *model = Emp.afficher();
+        QTableView *tableView = ui->tableView;
+        tableView->setModel(model);
+
+        ui->lineEdit_cin->clear();
+        ui->lineEdit_num->clear();
+        ui->lineEdit_nom->clear();
+        ui->lineEdit_pre->clear();
+        ui->lineEdit_add->clear();
+        ui->lineEdit_mail->clear();
+        ui->lineEdit_fct->clear();
+        ui->lineEdit_mdp->clear();
+
+        /*for (int row = 0; row < model->rowCount(); row++)
+        {
+            QPushButton *button = new QPushButton("", tableView);
+            button->setFixedSize(30, 30); // Set the size of the button to 50x50 pixels
+
+            QIcon icon_d(":/new/prefix1/icons/delete.png");
+            button->setIcon(icon_d);
+            button->setIconSize(QSize(30, 30));
+
+            QModelIndex index = model->index(row, model->columnCount() - 1);
+            tableView->setIndexWidget(index, button);
+        }
+
+        // Adjust the column width to make the button visible
+        tableView->horizontalHeader()->setSectionResizeMode(model->columnCount() - 1, QHeaderView::Fixed);
+        tableView->setColumnWidth(model->columnCount() - 1, 60); // Increase the column width to 60 pixels*/
+
+        // Show a success message box
+        QMessageBox::information(nullptr,QObject::tr("OK"),
+                                 QObject::tr("ajout effectué.\n"
+                                             "Click cancel to exit"),QMessageBox::Cancel);
+    }
+    else
+    {
+        // Show an error message box
+        QMessageBox::critical(nullptr,QObject::tr("Not OK"),
+                               QObject::tr("ajout non effectué.\n"
+                              "Click  cancel to exit"),QMessageBox::Cancel);
+    }
+}
+
+
+
+void emp::on_supprimer_clicked()
+{
+
+    bool ok;
+    QString id = QInputDialog::getText(this, tr("Enter ID"),
+                                        tr("ID of row to delete:"), QLineEdit::Normal,
+                                        "", &ok);
+    if (!ok || id.isEmpty())
+    {
+        return;
+    }
+    int cin = id.toInt();
+
+
+    bool test = Emp.supprimer(cin);
+    if (test)
+    {
+        ui->tableView->setModel(Emp.afficher());
+        QMessageBox::information(nullptr, tr("OK"), tr("Suppression effectuée."));
+    }
+    else
+    {
+        QMessageBox::critical(nullptr, tr("Erreur"), tr("Suppression non effectuée."));
+    }
 }
 
 
@@ -241,5 +233,39 @@ bool employe::supprimer(int cin)
 
 
 
+void emp::on_modifier_clicked()
+{
+    bool ok;
+        int CIN = QInputDialog::getInt(this, tr("Modifier employé"),
+                                        tr("ID de l'employé:"), 0, 0, 100000, 1, &ok);
+        if (ok)
+        {
+
+            bool test = Emp.modifier(CIN);
+            if (ok) {
 
 
+
+                // retrieve the model from the table view
+                           QSqlQueryModel* model = qobject_cast<QSqlQueryModel*>(ui->tableView->model());
+                           if (model)
+                           {
+                               // update the data in the model
+                               model->setQuery("SELECT * FROM GS_EMPLOYÉ");
+                           }
+
+            }
+            if (test)
+            {
+                QMessageBox::information(nullptr, QObject::tr("OK"),
+                                         QObject::tr("Modification effectuée.\n"
+                                                     "Click cancel to exit"), QMessageBox::Cancel);
+            }
+            else
+            {
+                QMessageBox::critical(nullptr, QObject::tr("Not OK"),
+                                        QObject::tr("Modification non effectuée.\n"
+                                                    "Click cancel to exit"), QMessageBox::Cancel);
+            }
+        }
+}
