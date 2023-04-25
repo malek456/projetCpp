@@ -1,5 +1,5 @@
 #include "connexion.h"
-#include "ui_connexion.h"
+#include "ui_connexion.h "
 
 connexion::connexion(QWidget *parent) :
     QDialog(parent),
