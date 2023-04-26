@@ -1,7 +1,7 @@
 #include "employe.h"
 #include"emp.h"
 #include <QLineEdit>
-#include <QFormLayout>
+#include <QFormLayout> 
 #include <QFormLayout>
 #include <QDialog>
 #include <QGroupBox>
