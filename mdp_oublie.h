@@ -1,7 +1,7 @@
 #ifndef MDP_OUBLIE_H
 #define MDP_OUBLIE_H
 
-#include <QDialog>
+#include <QDialog> 
 
 namespace Ui {
 class mdp_oublie;
