@@ -10,7 +10,7 @@
     <height>980</height>
    </rect>
   </property>
-  <property name="windowTitle">
+  <property name="windowTitle">  
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
