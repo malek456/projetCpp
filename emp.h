@@ -2,7 +2,7 @@
 #define EMP_H
 #include <QDialog>
 #include <QPushButton>
-#include <QPropertyAnimation>
+#include <QPropertyAnimation> 
 #include "employe.h"
 #include "chat.h"
 
