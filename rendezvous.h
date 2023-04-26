@@ -9,7 +9,7 @@
 #include <QStandardItemModel>
 #include <QDate>
 #include <QChartView>
-#include <QtCharts>
+#include <QtCharts> 
 
 class rendezvous
 {
