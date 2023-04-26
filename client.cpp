@@ -2,7 +2,7 @@
 #include "ui_client.h"
 #include "menu.h"
 
-client::client(QWidget *parent) :
+client::client(QWidget *parent) : 
     QDialog(parent),
     ui(new Ui::client)
 {
