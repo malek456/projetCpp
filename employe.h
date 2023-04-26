@@ -1,5 +1,5 @@
 #ifndef EMPLOYE_H
-#define EMPLOYE_H
+#define EMPLOYE_H 
 #include <QString>
 #include <QSqlQuery>
 #include <QSqlQueryModel>
