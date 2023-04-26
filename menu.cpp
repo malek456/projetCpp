@@ -8,7 +8,7 @@
 #include "equi.h"
 #include "global.h"
 
-menu::menu(QWidget *parent) :
+menu::menu(QWidget *parent) : 
     QDialog(parent),
     ui(new Ui::menu)
 {
