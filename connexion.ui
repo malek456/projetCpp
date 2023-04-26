@@ -1,6 +1,6 @@
 <ui version="4.0">
  <class>connexion</class>
- <widget class="QDialog" name="connexion">
+ <widget class="QDialog" name="connexion"> 
   <property name="geometry">
    <rect>
     <x>0</x>
