@@ -1,5 +1,5 @@
 #include "equi.h"
-#include "ui_equi.h"
+#include "ui_equi.h" 
 #include "menu.h"
 #include "equipement.h"
 #include <QDate>
