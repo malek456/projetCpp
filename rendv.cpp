@@ -9,7 +9,7 @@
 #include <QFormLayout>
 #include <QFormLayout>
 #include <QDialog>
-#include <QGroupBox>
+#include <QGroupBox> 
 #include <QLabel>
 #include <QMessageBox>
 #include <QComboBox>
