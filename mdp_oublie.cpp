@@ -2,7 +2,7 @@
 #include "ui_mdp_oublie.h"
 #include <QtNetwork>
 #include <QDebug>
-#include <QCoreApplication>
+#include <QCoreApplication> 
 #include <QTcpSocket>
 #include <QSslSocket>
 
