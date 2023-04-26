@@ -1,5 +1,5 @@
 #include "chat.h "
-#include "ui_chat.h"
+#include "ui_chat.h" 
 #include <QTcpSocket>
 #include <QDataStream>
 #include <QSqlQuery>
