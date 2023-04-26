@@ -3,7 +3,7 @@
 #include <QSqlQuery>
 #include <QString>
 #include "global.h"
-
+ 
 Compte::Compte(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Compte)
