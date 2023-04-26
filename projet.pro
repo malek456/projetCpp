@@ -1,6 +1,6 @@
 QT       += core gui sql printsupport network charts
 
-#INCLUDEPATH += "C:\Users\BOUZIDI MALEK\Desktop\projet\qrcodegen.hpp"
+#INCLUDEPATH += "C:\Users\BOUZIDI MALEK\Desktop\projet\qrcodegen.hpp" 
 
 
 
