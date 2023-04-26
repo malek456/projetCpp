@@ -4,7 +4,7 @@
 #include <QPushButton>
 //#include <QFrame>
 #include <QPropertyAnimation>
-#include <QDialog>
+#include <QDialog> 
 #include "rendezvous.h"
 
 
