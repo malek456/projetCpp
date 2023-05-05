@@ -1,0 +1,82 @@
+# libesmtp.spec.in
+# Based on original file by Carlos Morgado <chbm@chbm.nu>
+# Updates from Pawel Salek <pawsa@theochem.kth.se>
+# Updates from Christophe Lambin <clambin@easynet.be>
+# Meson updates from Brian Stafford <brian.stafford60@gmail.com>
+
+Summary:  	SMTP client library
+
+%define pkg	@PACKAGE@
+%define ver	@VERSION@
+%define rel    	1
+%define prefix 	/usr
+%define plugindir %{prefix}/@PLUGINDIR@
+%define libdir %{prefix}/@LIBDIR@
+%define bindir %{prefix}/@BINDIR@
+%define includedir %{prefix}/include
+%define openssl	1.1.0
+
+Name:     	%{pkg}
+Version:  	%{ver}
+Release:  	%{rel}
+
+Copyright:	LGPL
+Group:    	System Environment/Libraries
+Summary:        SMTP client library.
+Source:  	%{pkg}-%{ver}.tar.bz2
+
+URL:       	@URL@
+BuildRoot:	/var/tmp/%{pkg}-root
+Prefix:		%{prefix}
+
+Packager:	@EMAIL@
+Provides:	%{pkg}
+Docdir:		%{_docdir}
+
+BuildRequires:	meson
+BuildRequires:	gcc
+
+@RPM_REQUIRES@	@RPM_OPENSSL@
+@RPM_BUILDREQUIRES@	@RPM_OPENSSLDEVEL@
+
+%description
+LibESMTP is a library to manage posting (or submission of) electronic
+mail using SMTP to a preconfigured Mail Transport Agent (MTA) such as
+Exim.  It may be used as part of a Mail User Agent (MUA) or another
+program that must be able to post electronic mail but where mail
+functionality is not the program's primary purpose.
+
+%package devel
+Group:		Development/Libraries
+Summary:	Headers and development libraries for libESMTP.
+Requires:	%{pkg} = %{ver}
+@RPM_REQUIRES@	@RPM_OPENSSLDEVEL@
+
+%description devel
+The libesmtp-devel package contains headers and development libraries
+necessary for building programs against libesmtp.
+
+%prep
+%autosetup -c
+
+%build
+%meson
+%meson_build
+
+%install
+%meson_install
+
+%files
+%defattr(-, root, root)
+%doc AUTHORS COPYING.LIB COPYING.GPL NEWS Notes README.md
+%{libdir}/libesmtp.so.*
+%{plugindir}/sasl-*
+
+%files devel
+%defattr(-,root,root)
+%{bindir}/libesmtp-config
+%{includedir}/*
+%{libdir}/libesmtp.so
+%{libdir}/libesmtp.la
+%{libdir}/libesmtp.a
+

@@ -1,0 +1,46 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>icons/cli.png</file>
+        <file>icons/emp.png</file>
+        <file>icons/equi.png</file>
+        <file>icons/menu.png</file>
+        <file>icons/rend.png</file>
+        <file>icons/vehi.png</file>
+        <file>rech.png</file>
+        <file>icons/notif.png</file>
+        <file>pdf.png</file>
+        <file>stat.png</file>
+        <file>icons/back.png</file>
+        <file>icons/blue.png</file>
+        <file>icons/blue2.png</file>
+        <file>icons/peach.png</file>
+        <file>icons/retour.png</file>
+        <file>icons/retour1.png</file>
+        <file>icons/retour2.png</file>
+        <file>icons/chat.png</file>
+        <file>icons/pdf1.png</file>
+        <file>icons/stat.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/interf_chat.png</file>
+        <file>icons/refresh.png</file>
+        <file>icons/logo.png</file>
+        <file>icons/lock.gif</file>
+        <file>icons/lockdoor.png</file>
+        <file>icons/locked.png</file>
+        <file>icons/unlocked.png</file>
+        <file>icons/car.gif</file>
+        <file>icons/histo.jpg</file>
+        <file>icons/histo.jfif</file>
+        <file>icons/tech.jpg</file>
+        <file>icons/Untitled-1.png</file>
+        <file>icons/Untitled-22.png</file>
+        <file>icons/Untitled3.png</file>
+        <file>icons/excel.png</file>
+        <file>icons/etat.png</file>
+        <file>icons/facturee.png</file>
+        <file>icons/his.png</file>
+        <file>icons/import.png</file>
+        <file>icons/control.png</file>
+    </qresource>
+    <qresource prefix="/"/>
+</RCC>
