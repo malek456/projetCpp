@@ -4,7 +4,7 @@
 #include <QPushButton>
 //#include <QFrame>
 #include <QPropertyAnimation>
-#include <QDialog> 
+#include <QDialog>
 #include "rendezvous.h"
 
 
@@ -60,6 +60,14 @@ private slots:
     void on_calendarWidget_activated(const QDate &date);
 
     void on_calendarWidget_clicked(const QDate &date);
+
+    void on_mail_clicked();
+
+    void on_pushButton_2_clicked();
+
+    void on_pushButton_excel_clicked();
+
+    void on_pb_excel_clicked();
 
 public:
     QPushButton *menuButton ;
