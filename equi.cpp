@@ -1,4 +1,4 @@
-#include "equi.h"
+#include "equi.h" 
 #include "ui_equi.h"
 
 Equi::Equi(QWidget *parent) :
