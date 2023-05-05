@@ -1,7 +1,7 @@
 #include "rendv.h"
 #include "emp.h"
 #include "ui_rendv.h"
-#include "mail.h"
+//#include "mail.h"
 #include "menu.h"
 #include "rendezvous.h"
 #include <QMessageBox>
@@ -9,7 +9,7 @@
 #include <QFormLayout>
 #include <QFormLayout>
 #include <QDialog>
-#include <QGroupBox> 
+#include <QGroupBox>
 #include <QLabel>
 #include <QMessageBox>
 #include <QComboBox>
@@ -21,13 +21,16 @@
 #include <QtPrintSupport/QPrinter>
 #include <QFileDialog>
 #include <QtCharts>
-#include "smtp.h"
+//#include "smtp.h"
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 #include <QUrl>
 #include <QDebug>
 #include <QDateEdit>
+//#include "interfacea.h"
+#include "excel.h"
+#include <QAxObject>
 
 
 Rendv::Rendv(QWidget *parent) :
@@ -36,45 +39,6 @@ Rendv::Rendv(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    // Create and set up the menu button
-    menuButton = new QPushButton("", this);
-    menuButton->setGeometry(20, 43, 71, 41);
-    QIcon icon(":/new/prefix1/icons/menu.png");
-    menuButton->setIcon(icon);
-
-    // resize the icon to fit the button
-    menuButton->setIconSize(QSize(40, 40));
-
-    // Create and set up the side bar
-    side_menu = new QWidget(this);
-    side_menu->setGeometry(120, 40, 0, 50);
-    side_menu->setStyleSheet(" background-color: rgb(0,0,0); border:1px solid rgb(0,0,0);");
-
-    //create buttons
-    QPushButton *button1 = new QPushButton("e-mail", side_menu);
-    QPushButton *button2 = new QPushButton("Calendrier", side_menu);
-    QPushButton *button3 = new QPushButton("Statistique", side_menu);
-    QPushButton *button4 = new QPushButton("Exportation PDF", side_menu);
-    button1->setGeometry(100, 2, 111, 45);
-    button2->setGeometry(220, 2, 111, 45);
-    button3->setGeometry(340, 2, 111, 46);
-    button4->setGeometry(460, 2, 111, 46);
-    button1->setStyleSheet("background-color: rgb(172, 172, 172)");
-    button2->setStyleSheet("background-color: rgb(172, 172, 172)");
-    button3->setStyleSheet("background-color: rgb(172, 172, 172)");
-    button4->setStyleSheet("background-color: rgb(172, 172, 172)");
-
-
-    // Create the QPropertyAnimation object
-
-
-    sideBarAnimation = new QPropertyAnimation(side_menu, "geometry");
-
-    // Connect the menu button's clicked() signal to the toggleSideBar() slot
-    connect(menuButton, &QPushButton::clicked, this, &Rendv::on_pushButton_13_clicked);
-    connect(button1, &QPushButton::clicked, this, &Rendv::on_pushButton_mail);
-
-    //affichage
     ui->tableView_2->setModel(rdv.afficher());
 }
 
@@ -83,12 +47,7 @@ Rendv::~Rendv()
     delete ui;
 }
 
-void Rendv::on_pushButton_mail()
-{
-    mail m;
-    m.setModal(true);
-    m.exec();
-}
+
 
 void Rendv::on_pushButton_13_clicked()
 {
@@ -126,6 +85,7 @@ void Rendv::on_ajouter_clicked()
     QString heure=ui-> comboBox_2->currentText();
     QString service=ui->comboBox_3->currentText();
     QString mail=ui->lineEdit_6->text();
+    int mdp = ( rand () % (9999 - 0001 +1)) + 0001;
 
 
         QRegularExpression re("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}");
@@ -134,7 +94,7 @@ void Rendv::on_ajouter_clicked()
         if (match.hasMatch())
         {
 
-            rendezvous rdv(id_RDV,date_RDV,heure,service,mail,id_client,id_employe);
+            rendezvous rdv(id_RDV,date_RDV,heure,service,mail,id_client,id_employe,mdp);
 
 
                 bool test=rdv.ajouter();
@@ -149,12 +109,7 @@ void Rendv::on_ajouter_clicked()
                         QMessageBox::information(nullptr, QObject::tr("OK"),
                                                  QObject::tr("Ajout effectué\n"
                                                                 "Click cancel to exit."), QMessageBox::Cancel);
-                        /*Smtp* smtp = new Smtp("divinpoadzola@gmail.com", "enzmanvmwpaithdu", "smtp.gmail.com", 465 , 1500000);
-                               connect(smtp, SIGNAL(status(QString)), this, SLOT(mailSent(QString)));
 
-                                   smtp->sendMail( "divinpoadzola@gmail.com","divinpoadzola@gmail.com", "Confirmation du rdv","to yoki");
-                                   QMessageBox::information(nullptr,QObject::tr("OK"),
-                                                            QObject::tr("Mail envoyé"));*/
 
                    }
                    else
@@ -171,12 +126,12 @@ void Rendv::on_ajouter_clicked()
 
 
       ui->lineEdit_2->clear();
-      ui->dateEdit->clear();
-      ui->comboBox_2->clear();
+      //ui->dateEdit->clear();
+      //ui->comboBox_2->clear();
       ui->lineEdit_3->clear();
       ui->lineEdit_5->clear();
       ui->lineEdit_6->clear();
-      ui->comboBox_3->clear();
+      //ui->comboBox_3->clear();
       ui->lineEdit_2->setEnabled(true);
       ui->modifier->setEnabled(true);
 }
@@ -211,124 +166,130 @@ void Rendv::on_supprimer_clicked()
 
 void Rendv::on_modifier_clicked()
 {
-    bool ok;
-            int id_rdv = QInputDialog::getInt(this, tr("Modifier le rendezvous"),
-                                            tr("ID du Rendez-vous:"), 0, 0, 100000, 1, &ok);
-            if (ok)
-            {
+    bool test;
+    int id_RDV = ui->lineEdit_2->text().toInt();
+    int id_employe = ui->lineEdit_3->text().toInt();
+    int id_client = ui->lineEdit_5->text().toInt();
+    QDate date_RDV = ui->dateEdit->date();
+    QString heure = ui->comboBox_2->currentText();
+    QString service = ui->comboBox_3->currentText();
+    QString mail = ui->lineEdit_6->text();
+    int mdp = ( rand () % (9999 - 0001 +1)) + 0001;
 
-                bool test = rdv.modifier(id_rdv);
-                if (ok) {
+    QIntValidator validator;
+    int pos = 0;
+    QValidator::State state = validator.validate(service, pos);
 
+    if (id_RDV == 0 || date_RDV.isNull() || heure.isEmpty() || service.isEmpty() || id_client == 0 || id_employe == 0 || mail.isEmpty())
+    {
+        QMessageBox::information(nullptr, "error", "remplir tout les champs");
+    }
+    else if (state == QValidator::Invalid)
+    {
+        QMessageBox::information(nullptr, "error", "id client doit etre un entier");
+    }
+    else
+    {
+        rendezvous rdv(id_RDV, date_RDV, heure, service, mail, id_client, id_employe,mdp);
+        qDebug() << id_RDV;
+        test = rdv.modifier();
 
-
-                    // retrieve the model from the table view
-                               QSqlQueryModel* model = qobject_cast<QSqlQueryModel*>(ui->tableView_2->model());
-                               if (model)
-                               {
-                                   // update the data in the model
-                                   model->setQuery("SELECT * FROM GS_RENDEZV");
-                               }
-
-                }
-                if (test)
-                {
-                    QMessageBox::information(nullptr, QObject::tr("OK"),
-                                             QObject::tr("Modification effectuée.\n"
-                                                         "Click cancel to exit"), QMessageBox::Cancel);
-                }
-                else
-                {
-                    QMessageBox::critical(nullptr, QObject::tr("Not OK"),
-                                            QObject::tr("Modification non effectuée.\n"
-                                                        "Click cancel to exit"), QMessageBox::Cancel);
-                }
-            }
-
+        if (test) {
+            qDebug() << "Data inserted successfully";
+            QMessageBox::information(nullptr, "Success", "Data inserted successfully!");
+            ui->tableView_2->setModel(rdv.afficher());
+        }
+        else {
+            ui->tableView_2->setModel(rdv.afficher());
+            qDebug() << "Data insertion failed: ";
+            QMessageBox::information(nullptr, "failed", "Data insertion failed!");
+        }
+    }
 }
 
 
-/*
-void Rendv::on_valider_clicked()
-{
-    //int cin= on_modifier_clicked();
-        QMessageBox::StandardButton reply;
-            reply = QMessageBox::question(this, "Validation de modification", "Êtes-vous sûr de vouloir modifier ce rendez-vous ?",
-                                            QMessageBox::Yes|QMessageBox::No);
-            if (reply == QMessageBox::Yes) {
-
-                int id_rdv = ui->lineEdit_2->text().toInt();
-                 QDate date = ui->dateEdit->date();
-                 QString heure = ui->comboBox_2->currentText();
-                 QString service = ui->comboBox_3->currentText();
-                 int id_cl = ui->lineEdit_5->text().toInt();
-                int id_emp = ui->lineEdit_3->text().toInt();
-                QString  mail= ui->lineEdit_6->text();
 
 
-
-
-                if (rdv.modifier(id_rdv, date, heure, service,mail, id_cl, id_emp))
-                {
-                    QMessageBox::information(this,"Modification réussie","Les données du rendez-vous ont été modifiées avec succès");
-                    ui->valider->setEnabled(false);
-                    ui->annuler->setEnabled(false);
-                    ui->modifier->setEnabled(true);
-                    ui->tableView_2->setModel(rdv.afficher());
-
-                    //on_afficher_employe_clicked();
-                }
-                else
-                {
-                    QMessageBox::warning(this,"Modification échouée","Une erreur est survenue lors de la modification des données du rendz-vous");
-                }
-            } else {
-                ui->valider->setEnabled(false);
-                ui->annuler->setEnabled(false);
-                ui->modifier->setEnabled(true);
-
-            }
-            ui->lineEdit_2->clear();
-            ui->dateEdit->clear();
-            ui->comboBox_2->clear();
-            ui->lineEdit_3->clear();
-            ui->lineEdit_5->clear();
-            ui->lineEdit_6->clear();
-            ui->comboBox_3->clear();
-            ui->lineEdit_2->setEnabled(true);
-            ui->modifier->setEnabled(true);
-}
-*/
 void Rendv::on_imp_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, "Save PDF", "", "PDF Files (*.pdf)");
+    QSqlDatabase db = QSqlDatabase::database();
 
-            if (fileName.isEmpty())
-                return;
+                  // execute a query to get the table data
+                  QSqlQuery query("SELECT * FROM GS_RENDEZV ");
 
-            QPrinter printer(QPrinter::PrinterResolution);
-            printer.setOutputFormat(QPrinter::PdfFormat);
-            printer.setOutputFileName(fileName);
+                  // create a PDF writer object and set document properties
+                  QString fileName = QFileDialog::getSaveFileName(this, tr("Save PDF"), QString(), "*.pdf");
+                  if (fileName.isEmpty())
+                      return;
 
-            QPainter painter(&printer);
-            painter.setRenderHint(QPainter::Antialiasing, true);
+                  QPdfWriter writer(fileName);
+                  writer.setTitle("Table Report");
+                  writer.setCreator("My Application");
+                  writer.setPageSize(QPagedPaintDevice::A4);
 
-            QAbstractItemModel *model = ui->tableView_2->model();
-            int rowCount = model->rowCount();
-            int columnCount = model->columnCount();
+                  // create a QPainter object for painting the PDF
+                     QPainter painter(&writer);
+                     painter.setRenderHint(QPainter::Antialiasing);
 
-            // Loop through the rows and columns of the tableView and export the data
-            for (int row = 0; row < rowCount; row++) {
-                for (int column = 0; column < columnCount; column++) {
-                    QModelIndex index = model->index(row, column);
-                    QString text = model->data(index, Qt::DisplayRole).toString();
-                    painter.drawText(50 + column * 120, 50 + row * 20, text);
-                }
-            }
+                     // set the font and font size
+                     QFont font("Segoe UI", 8);
+                     painter.setFont(font);
+                   // set the margin and cell size
+                    int margin = 30;
+                    int cellWidth = (writer.width() - margin *2) / query.record().count();
+                    int cellHeight = 80;
 
-            painter.end();
+                    // draw the table header
+                    painter.drawText(margin, margin, "ID_RDV");
+                    painter.drawText(margin + cellWidth, margin, "DATE_RDV");
+                    painter.drawText(margin + cellWidth * 2, margin, "HEURE");
+                    painter.drawText(margin + cellWidth * 3, margin, "SERVICE");
+                    painter.drawText(margin + cellWidth * 4, margin, "ID_CLIENT");
+                    painter.drawText(margin + cellWidth * 5, margin, "ID_EMPLOYÉ");
+                    painter.drawText(margin + cellWidth * 6, margin, "MAIL");
+                    painter.drawText(margin + cellWidth * 6, margin, "Mot de passe");
+                     painter.drawText(margin + cellWidth * 6, margin, "Etat du rendez-vous");
 
-            QMessageBox::information(this, "PDF Export", "PDF exported to " + fileName);
+
+                    // draw the table data
+                    int row = 1;
+                    while (query.next()) {
+                        painter.drawText(margin, margin + cellHeight * row * 8, query.value(0).toString());
+                        painter.drawText(margin + cellWidth, margin + cellHeight * row * 8, query.value(1).toString());
+                        painter.drawText(margin + cellWidth * 2, margin + cellHeight * row * 8, query.value(2).toString());
+                        painter.drawText(margin + cellWidth *  3, margin + cellHeight * row * 8, query.value(3).toString());
+                        painter.drawText(margin + cellWidth * 4, margin + cellHeight * row * 8, query.value(4).toString());
+                        painter.drawText(margin + cellWidth * 5, margin + cellHeight * row * 8, query.value(5).toString());
+                        painter.drawText(margin + cellWidth * 6, margin + cellHeight * row * 8, query.value(6).toString());
+                          painter.drawText(margin + cellWidth * 7, margin + cellHeight * row * 8, query.value(7).toString());
+                          painter.drawText(margin + cellWidth * 8, margin + cellHeight * row * 8, query.value(8).toString());
+
+
+
+
+
+                        // start a new page for every 10 rows
+                        if (row % 12 == 0) {
+                            writer.newPage();
+                            painter.drawText(margin, margin, "ID_RDV");
+                           painter.drawText(margin + cellWidth, margin, "DATE_RDV");
+                            painter.drawText(margin + cellWidth * 2, margin, "HEURE");
+                            painter.drawText(margin + cellWidth * 3, margin, "SERVICE");
+                            painter.drawText(margin + cellWidth * 4, margin, "ID_CLIENT");
+                            painter.drawText(margin + cellWidth * 5, margin, "ID_EMPLOYÉ");
+                            painter.drawText(margin + cellWidth * 6, margin, "MAIL");
+                            painter.drawText(margin + cellWidth * 6, margin, "Mot de passe");
+                            painter.drawText(margin + cellWidth * 7, margin, "Etat du rendez-vous");
+
+                            row = 1;
+                        }
+
+                        row++;
+                    }
+
+                    // end painting
+                    painter.end();
+
 
 }
 
@@ -392,56 +353,12 @@ void Rendv::showStatistics(QWidget *parent, QChartView *chartView)
 
 
 
-/*void Rendv::on_toolButton_clicked()
-{
-    QNetworkAccessManager manager;
 
-        // Set up the email parameters
-        QString from = "divinpoadzola@gmail.com";
-        QString to = "divinpoadzola@gmail.com";
-        QString subject = "Test email";
-        QString body = "This is a test email.";
-
-        // Construct the email message
-        QString message = "From: " + from + "\n"
-                          "To: " + to + "\n"
-                          "Subject: " + subject + "\n"
-                          "\n"
-                          + body;
-
-        // Set up the network request
-        QNetworkRequest request;
-        request.setUrl(QUrl("smtp://smtp.gmail.com:587"));
-        request.setHeader(QNetworkRequest::ContentTypeHeader, "text/plain");
-        request.setRawHeader("Content-Length", QByteArray::number(message.size()));
-
-        QString username = "divinpoadzola@gmail.com";
-        QString password = "enzmanvmwpaithdu";
-        QString auth = "LOGIN " + QByteArray().append(username).toBase64() + " " + QByteArray().append(password).toBase64();
-           request.setRawHeader("Authorization", auth.toUtf8());
-
-        // Send the email
-        QNetworkReply *reply = manager.post(request, message.toUtf8());
-        QObject::connect(reply, &QNetworkReply::finished, [&]() {
-            qDebug() << "Email sent!";
-            //app.quit();
-        });
-
-        //return app.exec();
-}*/
-
-/*void Rendv::on_pushButton_7_clicked()
-{
-
-    ui->tableView_2->setModel(rdv.calendrier());
-}*/
 
 
 void Rendv::on_calendarWidget_activated(const QDate &date)
 {
-    /* QCalendarWidget *calendarWidget = new QCalendarWidget(); // création du widget de calendrier
-     QDate selectedDate = calendarWidget->selectedDate(); // récupération de la date sélectionnée
-     qDebug() << "La date sélectionnée est : " << selectedDate.toString("dd-yyyy-MM"); // affichage de la date sélectionnée dans la console*/
+
      if (ui->tableView_3 == ui->label->parentWidget()->children().last()){
              ui->label->lower();
              ui->tableView_3->lower();
@@ -453,3 +370,97 @@ void Rendv::on_calendarWidget_activated(const QDate &date)
 qDebug() << "La date sélectionnée est : " << date.toString("dd-MM-yyyy");
          }
 }
+
+
+void Rendv::on_pushButton_2_clicked()
+{
+    /*interfaceA a;
+    a.setModal(true);
+    a.exec();*/
+}
+
+
+
+void Rendv::on_pb_excel_clicked()
+{
+    /*QString fileName = QFileDialog::getSaveFileName(this, tr("Excel file"), qApp->applicationDirPath (),
+                                                                     tr("Excel Files (*.xls)"));
+                     if (fileName.isEmpty())
+                         return;
+
+                     ExportExcelObject obj(fileName, "mydata", ui->tableView_2);
+
+                     obj.addField(0, "id rendez-vous", "char(50)");
+                     obj.addField(1, "Date RDV", "char(50)");
+                     obj.addField(2, "Heure", "char(50)");
+                     obj.addField(3, "Type de Service", "char(50)");
+                     obj.addField(4, "Identifiant Client", "char(50)");
+                     obj.addField(5, "Identifiant Employé", "char(50)");
+                     obj.addField(6, "Mail", "char(50)");
+                     obj.addField(7, "Mot de passe", "char(50)");
+                     obj.addField(8, "Etat rendez-vous", "char(50)");
+
+                     int retVal = obj.export2Excel();
+
+                     if( retVal > 0)
+                     {
+                         QMessageBox::information(this, tr("Done"),
+                                                  QString(tr("%1 records exported!")).arg(retVal)
+                                                  );
+                     }*/
+
+        QSqlQuery query;
+        query.prepare("SELECT * FROM GS_RENDEZV ");
+
+        if (!query.exec()) {
+            qDebug() << "Erreur lors de l'extraction des données de la base de données";
+            return;
+        }
+
+    QAxObject excel("Excel.Application");
+       excel.setProperty("Visible", true); // affiche Excel
+       QAxObject *workbooks = excel.querySubObject("Workbooks");
+       QAxObject *workbook = workbooks->querySubObject("Add()");
+       QAxObject *worksheet = workbook->querySubObject("Worksheets(int)", 1); // première feuille de calcul
+       worksheet->setProperty("Name", "Revenus par emplacement"); // renomme la feuille de calcul
+       worksheet->querySubObject("Range(const QString&)", "A1")->setProperty("Value", "ID_RDV");
+       worksheet->querySubObject("Range(const QString&)", "B1")->setProperty("Value", "DATE_RDV");
+       worksheet->querySubObject("Range(const QString&)", "C1")->setProperty("Value", "HEURE");
+       worksheet->querySubObject("Range(const QString&)", "D1")->setProperty("Value", "SERVICE");
+       worksheet->querySubObject("Range(const QString&)", "E1")->setProperty("Value", "ID_CLIENT");
+       worksheet->querySubObject("Range(const QString&)", "F1")->setProperty("Value", "ID_EMPLOYE");
+       worksheet->querySubObject("Range(const QString&)", "G1")->setProperty("Value", "MAIL");
+       worksheet->querySubObject("Range(const QString&)", "H1")->setProperty("Value", "MDP");
+       worksheet->querySubObject("Range(const QString&)", "I1")->setProperty("Value", "ETAT");
+
+       QMap<QString, int> sumByEmplacement; // somme des revenus pour chaque emplacement
+       int rowIndex = 2;
+       while (query.next()) {
+           QString id_rdv = query.value(0).toString();
+           QString date_rdv = query.value(1).toString();
+           QString heure = query.value(2).toString();
+           QString service = query.value(3).toString();
+           QString id_client = query.value(4).toString();
+           QString id_employe = query.value(5).toString();
+           QString mail = query.value(6).toString();
+           QString mdp = query.value(7).toString();
+           QString etat = query.value(8).toString();
+
+
+           //umByEmplacement[emplacement] += revenus;
+           worksheet->querySubObject("Range(const QString&)", QString("A%1").arg(rowIndex))->setProperty("Value", QVariant(id_rdv));
+           worksheet->querySubObject("Range(const QString&)", QString("B%1").arg(rowIndex))->setProperty("Value", QVariant(date_rdv));
+           worksheet->querySubObject("Range(const QString&)", QString("C%1").arg(rowIndex))->setProperty("Value", QVariant(heure));
+           worksheet->querySubObject("Range(const QString&)", QString("D%1").arg(rowIndex))->setProperty("Value", QVariant(service));
+           worksheet->querySubObject("Range(const QString&)", QString("E%1").arg(rowIndex))->setProperty("Value", QVariant(id_client));
+           worksheet->querySubObject("Range(const QString&)", QString("F%1").arg(rowIndex))->setProperty("Value", QVariant(id_employe));
+           worksheet->querySubObject("Range(const QString&)", QString("G%1").arg(rowIndex))->setProperty("Value", QVariant(mail));
+           worksheet->querySubObject("Range(const QString&)", QString("H%1").arg(rowIndex))->setProperty("Value", QVariant(mdp));
+           worksheet->querySubObject("Range(const QString&)", QString("i%1").arg(rowIndex))->setProperty("Value", QVariant(etat));
+
+           rowIndex++;
+       }
+
+}
+
+
